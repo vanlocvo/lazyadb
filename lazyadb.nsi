@@ -6,9 +6,12 @@
 ;--------------------------------
 ;General
 
+    ; Set version
+    !define AppVersion "1.1"
+
     ;Name and file
     Name "LazyADB"
-    OutFile "build\LazyADB.exe"
+    OutFile "build\LazyADB_v${AppVersion}.exe"
     ShowInstDetails Show
     Unicode True
 
@@ -29,10 +32,10 @@
 
     BrandingText "LazyADB Installer"
 
-    VIProductVersion "1.1.0.0"
+    VIProductVersion "${AppVersion}.0.0"
     VIAddVersionKey "ProductName" "LazyADB"
     VIAddVersionKey "FileDescription" "With LazyADB, it will always download the latest adb from Google, just click next, next, next,... and enjoy."
-    VIAddVersionKey "FileVersion" "1.1"
+    VIAddVersionKey "FileVersion" "${AppVersion}"
 
     SpaceTexts none
 ;--------------------------------
