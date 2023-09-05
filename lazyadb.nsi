@@ -33,6 +33,8 @@
     VIAddVersionKey "ProductName" "LazyADB"
     VIAddVersionKey "FileDescription" "With LazyADB, it will always download the latest adb from Google, just click next, next, next,... and enjoy."
     VIAddVersionKey "FileVersion" "1.1"
+
+    SpaceTexts none
 ;--------------------------------
 ;Interface Settings
 
