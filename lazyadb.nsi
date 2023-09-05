@@ -8,13 +8,15 @@
 
     ;Name and file
     Name "LazyADB"
-    OutFile "LazyADB.exe"
+    OutFile "build\LazyADB.exe"
     ShowInstDetails Show
     Unicode True
 
-    !define MUI_ICON "icon\icon.ico"
+    !define MUI_ICON "assets\icon.ico"
+    !define MUI_UNICON "assets\icon.ico"
     !define MUI_HEADERIMAGE
-    !define MUI_HEADERIMAGE_BITMAP "icon\icon.png"
+    !define MUI_HEADERIMAGE_BITMAP "assets\logo.bmp"
+    !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
     !define MUI_HEADERIMAGE_RIGHT
 
     ;Default installation folder
@@ -25,6 +27,7 @@
 
     RequestExecutionLevel user
 
+    BrandingText "LazyADB Installer"
 ;--------------------------------
 ;Interface Settings
 
@@ -32,8 +35,6 @@
 
 ;--------------------------------
 ;Pages
-
-    ; !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
     
@@ -49,24 +50,40 @@
 ;--------------------------------
 ;Installer Sections
 
-Section 
+Section "Installer"
     InitPluginsDir
     SetOutpath "$INSTDIR"
-    inetc::get  "https://dl.google.com/android/repository/platform-tools-latest-windows.zip" "platform-tools-latest-windows.zip"  /END    
-    
-    Pop $0
-    ${If} $0 == "OK"
-    ${Else}
-        MessageBox mb_iconstop "Download fail: $0" 
-        Quit
+
+    nsProcessW::_FindProcess "adb.exe"
+    Pop $R0
+    ${If} $R0 == 0
+      MessageBox MB_OK|MB_ICONEXCLAMATION "adb is running. Please close it first" /SD IDOK
+      DetailPrint "Aborted"
+      Abort
     ${EndIf}
 
+    NSISdl::download "https://dl.google.com/android/repository/platform-tools-latest-windows.zip" "$INSTDIR\platform-tools-latest-windows.zip"  /END    
+    
+    Pop $0
+    ${If} $0 == "success"
+    ${Else}
+        MessageBox mb_iconstop "Download failed: $0"
+        DetailPrint "Aborted"
+        Abort
+    ${EndIf}
 
-    File "unzip.exe"
-    nsExec::ExecToLog 'unzip.exe -o "$INSTDIR\platform-tools-latest-windows.zip" -x platform-tools/systrace*' 
+    nsisunz::UnzipToLog "$INSTDIR\platform-tools-latest-windows.zip" "$INSTDIR"
+    ; Always check result on stack
+    Pop $0
+    ${If} $0 == "success"
+    ${Else}
+        MessageBox mb_iconstop "Extract failed: $0" 
+        Delete "platform-tools-latest-windows.zip"
+        DetailPrint "Aborted"
+        Abort
+    ${EndIf}
 
     Delete "platform-tools-latest-windows.zip"
-    Delete "unzip.exe"
 
     ;--------------
     ; ADD PATH
@@ -74,13 +91,15 @@ Section
 
     EnVar::AddValueEx "path" "$INSTDIR\platform-tools"
 
- 
-
     ;Store installation folder
     WriteRegStr HKCU "Software\LazyADB" "" $INSTDIR
     
     ;Create uninstaller
-    WriteUninstaller "$INSTDIR\Uninstall.exe"
+    WriteUninstaller "$INSTDIR\Uninstaller.exe"
+
+    ;Add uninstall information to Add/Remove Programs
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LazyADB"  "DisplayName" "LazyADB"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LazyADB"  "UninstallString" "$\"$INSTDIR\Uninstaller.exe$\""
 
 SectionEnd
 
@@ -90,6 +109,14 @@ SectionEnd
 
 Section "Uninstall"
 
+    nsProcessW::_FindProcess "adb.exe"
+    Pop $R0
+    ${If} $R0 == 0
+      MessageBox MB_OK|MB_ICONEXCLAMATION "adb is running. Please close it first" /SD IDOK
+      DetailPrint "Aborted"
+      Abort
+    ${EndIf}
+
     ;--------------
     ; REMOVE PATH
     ; Check if the path entry already exists and write result to $0
@@ -97,13 +124,13 @@ Section "Uninstall"
 
     EnVar::DeleteValue "path" "$INSTDIR\platform-tools"
 
-
     Delete "$INSTDIR\*.*"
 
-    Delete "$INSTDIR\Uninstall.exe"
+    Delete "$INSTDIR\Uninstaller.exe"
 
     RMDir /r "$INSTDIR"
 
-    DeleteRegKey /ifempty HKCU "Software\LazyADB"
+    DeleteRegKey HKCU "Software\LazyADB"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LazyADB"
 
 SectionEnd
