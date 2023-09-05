@@ -22,7 +22,7 @@ jobs:
         shell: pwsh
 
       - name: Copy plugins
-        run: Copy-Item -Path ".\plugins\*.dll" " -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\"
+        run: Copy-Item -Path ".\plugins\*.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\"
         shell: pwsh
       
       - name: Build installer
