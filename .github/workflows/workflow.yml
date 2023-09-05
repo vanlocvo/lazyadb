@@ -1,0 +1,40 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - v*
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install NSIS
+        run: |
+            Invoke-WebRequest https://nav.dl.sourceforge.net/project/nsis/NSIS%203/3.09/nsis-3.09-setup.exe -OutFile C:\WINDOWS\Temp\nsis-3.09-setup.exe
+            Invoke-Expression "& C:\WINDOWS\Temp\nsis-3.09-setup.exe \S"
+        shell: pwsh
+
+      - name: Copy plugins
+        run: Copy-Item -Path ".\plugins\*.dll" " -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\"
+        shell: pwsh
+      
+      - name: Build installer
+        run: |
+            if (!(Test-Path -Path ".\build")) { New-Item -Path ".\build" -ItemType Directory }
+            & "C:\Program Files (x86)\NSIS\makensis.exe" .\lazyadb.nsi
+        shell: pwsh
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          artifacts: "build\\LazyADB_v*.exe"
+          token: ${{ secrets.TOKEN }}
+          generateReleaseNotes: true
