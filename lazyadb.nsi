@@ -12,9 +12,9 @@
     ShowInstDetails Show
     Unicode True
 
-    !define MUI_ICON "icon.ico"
+    !define MUI_ICON "icon\icon.ico"
     !define MUI_HEADERIMAGE
-    !define MUI_HEADERIMAGE_BITMAP "icon.png"
+    !define MUI_HEADERIMAGE_BITMAP "icon\icon.png"
     !define MUI_HEADERIMAGE_RIGHT
 
     ;Default installation folder
