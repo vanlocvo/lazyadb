@@ -8,7 +8,7 @@ With LazyADB, it will always download the latest adb from Google, you just need 
 - Download the installer at release
 - Run it
 
-## How to build a local installer:
+## Build your own installer:
 - Install [NSIS](https://nsis.sourceforge.io/Download) 3.09
 - Add NSIS to PATH
 - Install plugins:
