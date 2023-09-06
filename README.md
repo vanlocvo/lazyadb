@@ -5,7 +5,7 @@ There are many ADB installers out there, but most are outdated and you are too l
 With LazyADB, it will always download the latest adb from Google, you just need to click next, next, next,... and enjoy \o/.
 
 ## Usage:
-- Download the installer at release
+- Download the [latest installer](https://github.com/vanlocvo/lazyadb/releases/latest)
 - Run it
 
 ## Build your own installer:
