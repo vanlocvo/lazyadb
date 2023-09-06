@@ -1,8 +1,8 @@
 # LazyADB
 
-There are many ADB installers out there but most of them are outdated and you are too lazy to Google and find the download link, and then extract and add to your PATH, then this is the installer you need.
+There are many ADB installers out there, but most are outdated and you are too lazy to Google, find the download link, extract, and add to PATH. This is the installer you need.
 
-With LazyADB, it will always download the latest adb from Google, just click next, next, next,... and enjoy \o/.
+With LazyADB, it will always download the latest adb from Google, you just need to click next, next, next,... and enjoy \o/.
 
 ## Usage:
 - Download the installer at release
